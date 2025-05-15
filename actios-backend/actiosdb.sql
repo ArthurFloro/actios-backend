@@ -15,7 +15,7 @@ CREATE TABLE usuarios (
                           senha VARCHAR(255) NOT NULL,
                           curso VARCHAR(100),
                           faculdade_id INT,
-                          tipo ENUM('aluno', 'faculdade') DEFAULT 'aluno',
+                          tipo ENUM('ALUNO', 'FACULDADE') DEFAULT 'ALUNO',
                           data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                           FOREIGN KEY (faculdade_id) REFERENCES faculdades(id_faculdade)
 );

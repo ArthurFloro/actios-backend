@@ -1,6 +1,5 @@
 package br.com.actios.actios_backend.model;
 
-
 import jakarta.persistence.*;
 
 @Entity
@@ -9,7 +8,7 @@ public class Faculdade {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer idFaculdade;
+    private Long idFaculdade;  // Alterado para Long
 
     @Column(name = "nome")
     private String nome;
@@ -22,11 +21,11 @@ public class Faculdade {
 
     // Getters e Setters
 
-    public Integer getIdFaculdade() {
+    public Long getIdFaculdade() {  // Alterado para Long
         return idFaculdade;
     }
 
-    public void setIdFaculdade(Integer idFaculdade) {
+    public void setIdFaculdade(Long idFaculdade) {  // Alterado para Long
         this.idFaculdade = idFaculdade;
     }
 
