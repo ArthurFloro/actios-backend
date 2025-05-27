@@ -1,7 +1,9 @@
 package br.com.actios.actios_backend.controllers;
 
+import br.com.actios.actios_backend.dto.UsuarioDTO;
 import br.com.actios.actios_backend.model.Usuario;
 import br.com.actios.actios_backend.service.UsuarioService;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping("/api/usuarios")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
@@ -28,9 +30,12 @@ public class UsuarioController {
 
     // GET: Listar todos os usuários
     @GetMapping("/listar")
-    public ResponseEntity<List<Usuario>> listarUsuarios() {
+    public ResponseEntity<List<UsuarioDTO>> listarUsuarios() {
         List<Usuario> usuarios = usuarioService.listarTodos();
-        return ResponseEntity.ok(usuarios);
+        List<UsuarioDTO> usuariosDTO = usuarios.stream()
+            .map(UsuarioDTO::fromUsuario)
+            .collect(Collectors.toList());
+        return ResponseEntity.ok(usuariosDTO);
     }
 
     // GET: Buscar por ID

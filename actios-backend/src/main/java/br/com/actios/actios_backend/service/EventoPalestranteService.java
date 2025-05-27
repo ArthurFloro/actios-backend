@@ -1,5 +1,6 @@
 package br.com.actios.actios_backend.service;
 
+import br.com.actios.actios_backend.dto.EventoDTO;
 import br.com.actios.actios_backend.model.Evento;
 import br.com.actios.actios_backend.model.EventoPalestrante;
 import br.com.actios.actios_backend.model.Palestrante;
@@ -13,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -28,9 +28,10 @@ public class EventoPalestranteService {
     @Autowired
     private PalestranteRepository palestranteRepository;
 
-    public Page<Evento> buscarEventosFuturosPorNomePalestrante(String nome, Pageable pageable) {
+    public Page<EventoDTO> buscarEventosFuturosPorNomePalestrante(String nome, Pageable pageable) {
         LocalDate agora = LocalDate.now();
-        return eventoPalestranteRepository.findEventosFuturosByNomeParcialDoPalestrante(agora, nome, pageable);
+        Page<Evento> eventos = eventoPalestranteRepository.findEventosFuturosByNomeParcialDoPalestrante(agora, nome, pageable);
+        return eventos.map(EventoDTO::new);
     }
 
     public String associarPalestranteAoEvento(int eventoId, int palestranteId) {

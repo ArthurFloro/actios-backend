@@ -1,5 +1,6 @@
 package br.com.actios.actios_backend.service;
 
+import br.com.actios.actios_backend.exceptions.RecursoExistenteException;
 import br.com.actios.actios_backend.exceptions.RecursoNaoEncontradoException;
 import br.com.actios.actios_backend.model.Categoria;
 import br.com.actios.actios_backend.repositorys.CategoriaRepository;
@@ -20,7 +21,7 @@ public class CategoriaService {
 
     public Categoria cadastrar(Categoria categoria) {
         if (categoriaRepository.existsByNome(categoria.getNome())) {
-            throw new IllegalArgumentException("Categoria já cadastrada com esse nome.");
+            throw new RecursoExistenteException("Categoria já cadastrada com esse nome.");
         }
         return categoriaRepository.save(categoria);
     }

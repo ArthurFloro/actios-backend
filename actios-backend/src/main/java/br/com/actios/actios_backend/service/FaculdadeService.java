@@ -1,5 +1,6 @@
 package br.com.actios.actios_backend.service;
 
+import br.com.actios.actios_backend.exceptions.CampoObrigatorioException;
 import br.com.actios.actios_backend.exceptions.RecursoNaoEncontradoException;
 import br.com.actios.actios_backend.model.Faculdade;
 import br.com.actios.actios_backend.repositorys.FaculdadeRepository;
@@ -20,7 +21,7 @@ public class FaculdadeService {
 
     public Faculdade cadastrar(Faculdade faculdade) throws Exception {
         if (faculdade.getNome() == null || faculdade.getNome().isBlank()) {
-            throw new Exception("Nome da faculdade é obrigatório.");
+            throw new CampoObrigatorioException("Nome da faculdade é obrigatório.");
         }
 
         return faculdadeRepository.save(faculdade);
@@ -37,7 +38,7 @@ public class FaculdadeService {
 
     public Faculdade atualizar(Faculdade faculdade) throws Exception {
         if (faculdade.getIdFaculdade() == null || !faculdadeRepository.existsById(faculdade.getIdFaculdade())) {
-            throw new Exception("Faculdade não encontrada para atualização.");
+            throw new RecursoNaoEncontradoException("Faculdade não encontrada para atualização.");
         }
 
         return faculdadeRepository.save(faculdade);
@@ -45,7 +46,7 @@ public class FaculdadeService {
 
     public void excluir(Integer id) throws Exception {
         if (!faculdadeRepository.existsById(id)) {
-            throw new Exception("Faculdade não encontrada para exclusão.");
+            throw new RecursoNaoEncontradoException("Faculdade não encontrada para exclusão.");
         }
         faculdadeRepository.deleteById(id);
     }

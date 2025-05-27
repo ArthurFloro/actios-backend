@@ -1,5 +1,9 @@
 package br.com.actios.actios_backend.service;
 
+import br.com.actios.actios_backend.exceptions.DataInvalidaException;
+import br.com.actios.actios_backend.exceptions.RecursoExistenteException;
+import br.com.actios.actios_backend.exceptions.RecursoNaoEncontradoException;
+import br.com.actios.actios_backend.exceptions.TipoUsuarioInvalidoException;
 import br.com.actios.actios_backend.model.Evento;
 import br.com.actios.actios_backend.model.Inscricao;
 import br.com.actios.actios_backend.model.Usuario;
@@ -10,6 +14,7 @@ import br.com.actios.actios_backend.enums.TipoUsuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -29,27 +34,28 @@ public class InscricaoService {
 
     public Inscricao inscrever(Integer idUsuario, Integer idEvento) throws Exception {
         Usuario usuario = usuarioRepository.findById(idUsuario)
-                .orElseThrow(() -> new Exception("Usuário não encontrado."));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Usuário não encontrado."));
         Evento evento = eventoRepository.findById(idEvento)
-                .orElseThrow(() -> new Exception("Evento não encontrado."));
+                .orElseThrow(() -> new RecursoNaoEncontradoException("Evento não encontrado."));
 
         if (usuario.getTipo() != TipoUsuario.ALUNO) {
-            throw new Exception("Apenas usuários do tipo 'ALUNO' podem se inscrever em eventos.");
+            throw new TipoUsuarioInvalidoException("Apenas usuários do tipo 'ALUNO' podem se inscrever em eventos.");
         }
 
         if (evento.getData().isBefore(LocalDate.now())) {
-            throw new Exception("Não é possível se inscrever em eventos passados.");
+            throw new DataInvalidaException("Não é possível se inscrever em eventos passados.");
         }
 
         Optional<Inscricao> existente = inscricaoRepository.findByUsuarioAndEvento(usuario, evento);
         if (existente.isPresent()) {
-            throw new Exception("Usuário já está inscrito neste evento.");
+            throw new RecursoExistenteException("Usuário já está inscrito neste evento.");
         }
 
         Inscricao inscricao = new Inscricao();
         inscricao.setUsuario(usuario);
         inscricao.setEvento(evento);
         inscricao.setNumeroInscricao(gerarNumeroInscricaoUnico());
+        inscricao.setDataInscricao(LocalDateTime.now());  // <<< seta a data atual aqui
 
         return inscricaoRepository.save(inscricao);
     }
@@ -60,7 +66,7 @@ public class InscricaoService {
 
     public void cancelarInscricao(Integer idInscricao) throws Exception {
         if (!inscricaoRepository.existsById(idInscricao)) {
-            throw new Exception("Inscrição não encontrada.");
+            throw new RecursoNaoEncontradoException("Inscrição não encontrada.");
         }
 
         inscricaoRepository.deleteById(idInscricao);

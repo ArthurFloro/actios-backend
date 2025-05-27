@@ -1,5 +1,6 @@
 package br.com.actios.actios_backend.controllers;
 
+import br.com.actios.actios_backend.dto.EventoDTO;
 import br.com.actios.actios_backend.model.Evento;
 import br.com.actios.actios_backend.service.EventoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,10 +8,15 @@ import org.springframework.data.domain.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
 import java.util.List;
 
 @RestController
-@RequestMapping("/eventos")
+@RequestMapping("/api/eventos")
 public class EventoController {
 
     private final EventoService eventoService;
@@ -27,10 +33,20 @@ public class EventoController {
         }
 
     @GetMapping("/listar")
-    public ResponseEntity<List<Evento>> listar() {
-        List<Evento> eventos = eventoService.listarTodos();
-        return ResponseEntity.ok(eventos);
+    public ResponseEntity<Page<EventoDTO>> listar(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "asc") String sort) {
+
+        Sort.Direction direction = sort.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "data"));
+
+        Page<Evento> eventosPage = eventoService.listarTodos(pageable);
+        Page<EventoDTO> eventosDTOPage = eventosPage.map(EventoDTO::new);
+
+        return ResponseEntity.ok(eventosDTOPage);
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<Evento> buscarPorId(@PathVariable Integer id) throws Exception {

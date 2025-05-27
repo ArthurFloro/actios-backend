@@ -1,5 +1,6 @@
 package br.com.actios.actios_backend.service;
 
+import br.com.actios.actios_backend.exceptions.RecursoExistenteException;
 import br.com.actios.actios_backend.exceptions.RecursoNaoEncontradoException;
 import br.com.actios.actios_backend.model.Palestrante;
 import br.com.actios.actios_backend.repositorys.PalestranteRepository;
@@ -20,7 +21,7 @@ public class PalestranteService {
 
     public Palestrante cadastrar(Palestrante palestrante) throws Exception {
         if (palestranteRepository.existsByEmail(palestrante.getEmail())) {
-            throw new Exception("E-mail já cadastrado para outro palestrante.");
+            throw new RecursoExistenteException("E-mail já cadastrado para outro palestrante.");
         }
         return palestranteRepository.save(palestrante);
     }
@@ -37,14 +38,14 @@ public class PalestranteService {
 
     public Palestrante atualizar(Palestrante palestrante) throws Exception {
         if (!palestranteRepository.existsById(palestrante.getIdPalestrante())) {
-            throw new Exception("Palestrante não encontrado para atualização.");
+            throw new RecursoNaoEncontradoException("Palestrante não encontrado para atualização.");
         }
         return palestranteRepository.save(palestrante);
     }
 
     public void excluir(Integer id) throws Exception {
         if (!palestranteRepository.existsById(id)) {
-            throw new Exception("Palestrante não encontrado para exclusão.");
+            throw new RecursoNaoEncontradoException("Palestrante não encontrado para exclusão.");
         }
         palestranteRepository.deleteById(id);
     }

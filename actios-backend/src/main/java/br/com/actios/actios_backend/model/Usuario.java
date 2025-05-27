@@ -1,17 +1,36 @@
 package br.com.actios.actios_backend.model;
 
-
 import br.com.actios.actios_backend.enums.TipoUsuario;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "usuarios")
 public class Usuario {
 
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private Set<Notificacao> notificacoes = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<RegistroCertificado> certificados = new HashSet<>();
+
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<FeedbackEvento> feedbacks = new HashSet<>();
+
+    @OneToMany(mappedBy = "usuario")
+    @JsonIgnore
+    private Set<VinculoCursoUsuario> vinculosCursos = new HashSet<>();
+
+
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // << aqui a alteração principal
     private Integer idUsuario;
 
     @Column(name = "nome")
@@ -45,13 +64,7 @@ public class Usuario {
         this.idUsuario = idUsuario;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    // demais getters e setters...
 
     public String getNome() {
         return nome;
@@ -59,6 +72,14 @@ public class Usuario {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getSenha() {
