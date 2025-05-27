@@ -1,6 +1,7 @@
 package br.com.actios.actios_backend.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "inscricoes", uniqueConstraints = {
@@ -23,6 +24,9 @@ public class Inscricao {
 
     @Column(name = "numero_inscricao", nullable = false, unique = true)
     private String numeroInscricao;
+
+    @Column(name = "data_inscricao", nullable = false)
+    private LocalDateTime dataInscricao;
 
     // Getters e setters
     public Integer getIdInscricao() {
@@ -55,5 +59,13 @@ public class Inscricao {
 
     public void setNumeroInscricao(String numeroInscricao) {
         this.numeroInscricao = numeroInscricao;
+    }
+
+    public LocalDateTime getDataInscricao() {
+        return dataInscricao;
+    }
+
+    public void setDataInscricao(LocalDateTime dataInscricao) {
+        this.dataInscricao = dataInscricao;
     }
 }

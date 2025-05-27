@@ -1,9 +1,9 @@
 package br.com.actios.actios_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "eventos")
@@ -14,31 +14,38 @@ public class Evento {
     @Column(name = "id_evento")
     private Integer idEvento;
 
-    @Column(name = "titulo", nullable = false)
+    @Column(nullable = false)
     private String titulo;
 
-    @Column(name = "descricao", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String descricao;
 
-    @Column(name = "data", nullable = false)
+    @Column(nullable = false)
     private LocalDate data;
 
-    @Column(name = "horario")
     private String horario;
-
-    @Column(name = "local")
     private String local;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "faculdade_id")
     private Faculdade faculdade;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
-    @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<EventoPalestrante> eventoPalestrantes = new HashSet<>();
+
+    @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<FeedbackEvento> feedbacks = new HashSet<>();
+
+    @OneToOne(mappedBy = "evento", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private EventoDetalhe detalhes;
+
+    @OneToMany(mappedBy = "evento", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private Set<Notificacao> notificacoes = new HashSet<>();
 
     // Getters e setters
 
@@ -112,5 +119,43 @@ public class Evento {
 
     public void setEventoPalestrantes(Set<EventoPalestrante> eventoPalestrantes) {
         this.eventoPalestrantes = eventoPalestrantes;
+    }
+
+    public Set<FeedbackEvento> getFeedbacks() {
+        return feedbacks;
+    }
+
+    public void setFeedbacks(Set<FeedbackEvento> feedbacks) {
+        this.feedbacks = feedbacks;
+    }
+
+    public void adicionarFeedback(FeedbackEvento feedback) {
+        feedbacks.add(feedback);
+        feedback.setEvento(this);
+    }
+
+    public void removerFeedback(FeedbackEvento feedback) {
+        feedbacks.remove(feedback);
+        feedback.setEvento(null);
+    }
+
+    public EventoDetalhe getDetalhes() {
+        return detalhes;
+    }
+
+    public void setDetalhes(EventoDetalhe detalhes) {
+        this.detalhes = detalhes;
+    }
+
+    public void adicionarDetalhes(EventoDetalhe detalhes) {
+        this.detalhes = detalhes;
+        detalhes.setEvento(this);
+    }
+
+    public void removerDetalhes() {
+        if (detalhes != null) {
+            detalhes.setEvento(null);
+            this.detalhes = null;
+        }
     }
 }

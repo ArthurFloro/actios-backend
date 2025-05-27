@@ -1,5 +1,7 @@
 package br.com.actios.actios_backend.service;
 
+import br.com.actios.actios_backend.exceptions.CampoObrigatorioException;
+import br.com.actios.actios_backend.exceptions.DataInvalidaException;
 import br.com.actios.actios_backend.exceptions.RecursoNaoEncontradoException;
 import br.com.actios.actios_backend.model.Evento;
 import br.com.actios.actios_backend.repositorys.EventoRepository;
@@ -27,21 +29,21 @@ public class EventoService {
 
     public Evento cadastrar(Evento evento) throws Exception {
         if (evento.getData() == null) {
-            throw new Exception("Data do evento é obrigatória.");
+            throw new CampoObrigatorioException("Data do evento é obrigatória.");
         }
         if (evento.getData().isBefore(LocalDate.now())) {
-            throw new Exception("Não é permitido cadastrar eventos com data passada.");
+            throw new DataInvalidaException("Não é permitido cadastrar eventos com data passada.");
         }
         if (evento.getTitulo() == null || evento.getTitulo().isBlank()) {
-            throw new Exception("Título do evento é obrigatório.");
+            throw new CampoObrigatorioException("Título do evento é obrigatório.");
         }
         // Outros campos obrigatórios podem ser validados aqui, se necessário
 
         return eventoRepository.save(evento);
     }
 
-    public List<Evento> listarTodos() {
-        return eventoRepository.findAll();
+    public Page<Evento> listarTodos(Pageable pageable) {
+        return eventoRepository.findAll(pageable);
     }
 
     public Evento buscarPorId(Integer id) {
@@ -51,16 +53,16 @@ public class EventoService {
 
     public Evento atualizar(Evento evento) throws Exception {
         if (evento.getIdEvento() == null || !eventoRepository.existsById(evento.getIdEvento())) {
-            throw new Exception("Evento não encontrado para atualização.");
+            throw new RecursoNaoEncontradoException("Evento não encontrado para atualização.");
         }
         if (evento.getData() == null) {
-            throw new Exception("Data do evento é obrigatória.");
+            throw new CampoObrigatorioException("Data do evento é obrigatória.");
         }
         if (evento.getData().isBefore(LocalDate.now())) {
-            throw new Exception("Não é permitido atualizar para data passada.");
+            throw new DataInvalidaException("Não é permitido atualizar para data passada.");
         }
         if (evento.getTitulo() == null || evento.getTitulo().isBlank()) {
-            throw new Exception("Título do evento é obrigatório.");
+            throw new CampoObrigatorioException("Título do evento é obrigatório.");
         }
 
         return eventoRepository.save(evento);
@@ -68,7 +70,7 @@ public class EventoService {
 
     public void excluir(Integer id) throws Exception {
         if (!eventoRepository.existsById(id)) {
-            throw new Exception("Evento não encontrado para exclusão.");
+            throw new RecursoNaoEncontradoException("Evento não encontrado para exclusão.");
         }
         eventoRepository.deleteById(id);
     }

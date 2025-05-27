@@ -1,5 +1,7 @@
 package br.com.actios.actios_backend.service;
 
+import br.com.actios.actios_backend.exceptions.CredenciaisInvalidasException;
+import br.com.actios.actios_backend.exceptions.RecursoExistenteException;
 import br.com.actios.actios_backend.exceptions.RecursoNaoEncontradoException;
 import br.com.actios.actios_backend.model.Faculdade;
 import br.com.actios.actios_backend.model.Usuario;
@@ -26,23 +28,27 @@ public class UsuarioService {
 
     public Usuario cadastrar(Usuario usuario) throws Exception {
         if (usuarioRepository.existsByEmail(usuario.getEmail())) {
-            throw new Exception("E-mail já cadastrado.");
+            throw new RecursoExistenteException("E-mail já cadastrado.");
         }
 
         // Se vier ID de faculdade, buscar e associar
         if (usuario.getFaculdade() != null && usuario.getFaculdade().getIdFaculdade() != null) {
             Faculdade faculdade = faculdadeRepository.findById(usuario.getFaculdade().getIdFaculdade())
-                    .orElseThrow(() -> new Exception("Faculdade não encontrada."));
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Faculdade não encontrada."));
             usuario.setFaculdade(faculdade);
         }
 
+        usuario.setIdUsuario(null);  // << Aqui o ajuste para garantir que o ID será gerado pelo banco
+
         usuario.setDataCadastro(LocalDateTime.now());
+
         return usuarioRepository.save(usuario);
     }
 
-    public Usuario autenticar(String email, String senha) throws Exception {
+
+    public Usuario autenticar(String email, String senha) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmailAndSenha(email, senha);
-        return usuarioOpt.orElseThrow(() -> new Exception("Credenciais inválidas."));
+        return usuarioOpt.orElseThrow(() -> new CredenciaisInvalidasException("Credenciais inválidas."));
     }
 
     public List<Usuario> listarTodos() {
@@ -56,13 +62,13 @@ public class UsuarioService {
 
     public Usuario atualizar(Usuario usuario) throws Exception {
         if (!usuarioRepository.existsById(usuario.getIdUsuario())) {
-            throw new Exception("Usuário não encontrado.");
+            throw new RecursoNaoEncontradoException("Usuário não encontrado.");
         }
 
         // Atualizar faculdade, se fornecida
         if (usuario.getFaculdade() != null && usuario.getFaculdade().getIdFaculdade() != null) {
             Faculdade faculdade = faculdadeRepository.findById(usuario.getFaculdade().getIdFaculdade())
-                    .orElseThrow(() -> new Exception("Faculdade não encontrada."));
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Faculdade não encontrada."));
             usuario.setFaculdade(faculdade);
         }
 
@@ -71,7 +77,7 @@ public class UsuarioService {
 
     public void excluir(Integer id) throws Exception {
         if (!usuarioRepository.existsById(id)) {
-            throw new Exception("Usuário não encontrado.");
+            throw new RecursoNaoEncontradoException("Usuário não encontrado.");
         }
         usuarioRepository.deleteById(id);
     }

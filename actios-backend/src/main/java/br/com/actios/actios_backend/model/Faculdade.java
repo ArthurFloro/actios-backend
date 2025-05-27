@@ -1,6 +1,8 @@
 package br.com.actios.actios_backend.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import java.util.*;
 
 @Entity
 @Table(name = "faculdades")
@@ -19,6 +21,10 @@ public class Faculdade {
 
     @Column(name = "site")
     private String site;
+
+    @OneToMany(mappedBy = "faculdade", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private Set<Organizador> organizadores = new HashSet<>();
 
     // Getters e Setters
 
@@ -52,5 +58,27 @@ public class Faculdade {
 
     public void setSite(String site) {
         this.site = site;
+    }
+
+    public Set<Organizador> getOrganizadores() {
+        return Collections.unmodifiableSet(organizadores);
+    }
+
+    public void adicionarOrganizador(Organizador organizador) {
+        organizadores.add(organizador);
+        organizador.setFaculdade(this);
+    }
+
+    public void removerOrganizador(Organizador organizador) {
+        organizadores.remove(organizador);
+        organizador.setFaculdade(null);
+    }
+
+    public int contarOrganizadores() {
+        return organizadores.size();
+    }
+
+    public List<Organizador> getOrganizadoresAtivos() {
+        return new ArrayList<>(organizadores);
     }
 }
