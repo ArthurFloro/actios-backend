@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: actios-backend
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/actiosdb
+    username: root
+    password: teste
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
