@@ -279,7 +279,7 @@ DELETE	/api/inscricoes/{id}	USER	Cancela inscrição
 
 📘 Diagrama de Arquitetura do Backend:
 
-![Diagrama Back-End Actios](docs/diagrama-backend-actios.png)
+![Diagrama](https://github.com/ArthurFloro/actios-backend/raw/main/docs/diagrama-backend-actios.png)
 
 📬 Contato
 Desenvolvido pela equipe Actios:
