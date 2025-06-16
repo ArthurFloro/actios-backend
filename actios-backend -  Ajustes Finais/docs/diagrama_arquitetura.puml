@@ -1,0 +1,86 @@
+@startuml
+!pragma layout smetana
+left to right direction
+skinparam monochrome false
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontName Arial
+skinparam defaultFontSize 14
+skinparam shadowing false
+skinparam packageStyle rectangle
+skinparam arrowColor #0076D6
+
+title **Arquitetura do Actios Backend** \n<size:12>Diagrama de Componentes</size>
+
+package "Camada de Controle\n(Controllers)" #E6E6FA {
+    [UsuarioController]
+    [CursoController]
+    [InscricaoController]
+}
+
+package "Camada de Serviço\n(Services)" #F0F8FF {
+    [UsuarioService]
+    [CursoService]
+    [InscricaoService]
+}
+
+package "Camada de Repositório\n(Repositories)" #E0FFFF {
+    [UsuarioRepository]
+    [CursoRepository]
+    [InscricaoRepository]
+}
+
+database "Banco de Dados\nMySQL" #E6E6E6
+
+package "Modelos de Domínio" #FFF8DC {
+    [Usuario]
+    [Curso]
+    [Inscricao]
+}
+
+package "DTOs" #F5F5DC {
+    [UsuarioDTO]
+    [CursoDTO]
+    [InscricaoDTO]
+}
+
+package "Exceções" #FFEBEB {
+    [CustomException]
+    [ValidacaoException]
+}
+
+' --- Fluxos ---
+[UsuarioController] -> [UsuarioService] : "▶ HTTP"
+[CursoController] -> [CursoService]
+[InscricaoController] -> [InscricaoService]
+
+[UsuarioService] -> [UsuarioRepository] : "▶ CRUD"
+[CursoService] -> [CursoRepository]
+[InscricaoService] -> [InscricaoRepository]
+
+[UsuarioRepository] --> [Usuario] : "▶ Mapeia"
+[CursoRepository] --> [Curso]
+[InscricaoRepository] --> [Inscricao]
+
+[UsuarioService] --> [UsuarioDTO] : "▶ Transforma"
+[CursoService] --> [CursoDTO]
+[InscricaoService] --> [InscricaoDTO]
+
+[UsuarioService] --> [CustomException] : "▶ Lança"
+[UsuarioService] --> [ValidacaoException]
+
+legend bottom center
+<font color=#0076D6>**Legenda**</font>
+|===
+|<#E6E6FA> Controle | <#F0F8FF> Serviço | <#E0FFFF> Repositório |
+|<#FFF8DC> Modelos | <#F5F5DC> DTOs | <#FFEBEB> Exceções |
+| Banco de Dados |→| #E6E6E6 |
+|===
+end legend
+
+note right of [UsuarioService]
+  <b>Lógica de Serviço:</b>
+  1. Validação de dados
+  2. Transformação DTO/Modelo
+  3. Regras de negócio
+end note
+@enduml
