@@ -1,0 +1,36 @@
+# Configuração principal da aplicação Spring
+spring:
+  # Configuração do nome da aplicação para identificação
+  application:
+    name: actios-backend  # Nome da aplicação para service discovery e logs
+
+  # Configuração de conexão com o banco de dados
+  datasource:
+    # URL de conexão JDBC com o MySQL
+    # Formato: jdbc:mysql://<servidor>:<porta>/<nome-do-banco>
+    url: jdbc:mysql://localhost:3306/actiosdb
+
+    # Credenciais de acesso ao banco de dados
+    username: root       # Usuário do banco de dados
+    password: valentimnet # Senha do banco de dados
+
+    # Classe do driver JDBC para MySQL
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # Configuração do JPA e Hibernate
+  jpa:
+    # Dialeto específico para MySQL (define o SQL gerado)
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+    # Configurações específicas do Hibernate
+    hibernate:
+      # Estratégia para DDL (Data Definition Language):
+      # 'update' - atualiza o schema se necessário
+      # 'create' - recria o schema (apaga dados existentes)
+      # 'create-drop' - cria ao iniciar e remove ao encerrar
+      # 'validate' - apenas valida o schema
+      # 'none' - não faz alterações no schema
+      ddl-auto: update
+
+    # Exibe todas as queries SQL no console (para desenvolvimento)
+    show-sql: true
